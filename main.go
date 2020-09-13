@@ -10,23 +10,35 @@ import (
 	cli "github.com/urfave/cli/v2"
 )
 
+const (
+	// DefaultMaxStudents is the default maximum number of
+	// students that can be in a class simultaneously
+	DefaultMaxStudents = 15
+	// DefaultMaxGenerations is the default maximum number
+	// of generations that are the same before the algorithm
+	// stops to evolve
+	DefaultMaxGenerations = 2500
+)
+
 var (
 	// ErrInputPathEmpty throws if input file path is not specified
-	ErrInputPathEmpty = errors.New("Input file path cannot be empty")
+	ErrInputPathEmpty = errors.New("Input file path must be set with --input")
 	// ErrInvalidFileFormat throws if the input file could not be read by excelize
 	ErrInvalidFileFormat = errors.New("The provided file is not a valid Excel file")
 	// ErrMaxStudentsTooSmall throws if the max amount of students is too small to compute
 	ErrMaxStudentsTooSmall = errors.New("The provided maximum number of students must be at least 5")
 )
 
-const (
-	// DefaultFitness is the default fitness the
-	// algorithm uses to determine when to stop
-	DefaultFitness = 0.2
-	// DefaultMaxStudents is the default number of
-	// students that can be in a class simultaneously
-	DefaultMaxStudents = 15
-)
+// ErrCourseTooLarge throws if the provied max amount of students
+// in a class is less than the half of the courses student count
+type ErrCourseTooLarge struct {
+	Name     string
+	Students int
+}
+
+func (e ErrCourseTooLarge) Error() string {
+	return fmt.Sprintf("The course %v has too many students (%v)", e.Name, e.Students)
+}
 
 func main() {
 	app := &cli.App{
@@ -43,14 +55,14 @@ func main() {
 				Usage: "the output file path",
 			},
 			&cli.IntFlag{
-				Name:  "max",
+				Name:  "students",
 				Usage: "the max number of students in a class",
 				Value: DefaultMaxStudents,
 			},
-			&cli.Float64Flag{
-				Name:  "fitness",
-				Usage: "the fitness the algorithm should stop",
-				Value: DefaultFitness,
+			&cli.IntFlag{
+				Name:  "generations",
+				Usage: "the max number generations that are the same",
+				Value: DefaultMaxGenerations,
 			},
 		},
 	}
@@ -65,22 +77,16 @@ func main() {
 // Run runs the application
 func Run(cmd *cli.Context) error {
 
-	// Check if user provided an input file path
 	inputPath := cmd.String("input")
 	if inputPath == "" {
 		return ErrInputPathEmpty
 	}
 
-	// Check if user provided a max fitness
-	fitness := cmd.Float64("fitness")
-
-	// Check if user provided a max amount of students
-	maxStudents := cmd.Int("max")
+	maxStudents := cmd.Int("students")
 	if maxStudents < 5 {
 		return ErrMaxStudentsTooSmall
 	}
 
-	// Open file with provided input file path
 	workbook, err := excel.OpenFile(inputPath)
 	if err != nil {
 		return ErrInvalidFileFormat
@@ -91,7 +97,17 @@ func Run(cmd *cli.Context) error {
 		return err
 	}
 
-	schedule := app.RunAlgorithm(courses, students, maxStudents, float32(fitness))
+	for _, course := range courses {
+		if course.CountStudents()/2 > maxStudents {
+			overflow := course.CountStudents() - (maxStudents * 2)
+			return ErrCourseTooLarge{Name: course.Name, Students: overflow}
+		}
+	}
+
+	maxGenerations := cmd.Int("generations")
+
+	schedule := app.RunAlgorithm(courses, students, maxStudents, maxGenerations)
+	fmt.Println("Fitness:", schedule.Fitness)
 
 	outputPath := cmd.String("output")
 	if outputPath == "" {
@@ -99,7 +115,5 @@ func Run(cmd *cli.Context) error {
 		return nil
 	}
 
-	app.WriteScheduleAsFile(schedule, outputPath)
-
-	return nil
+	return app.WriteScheduleAsFile(schedule, outputPath)
 }

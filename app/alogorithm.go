@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"math/rand"
 	"sort"
 	"time"
@@ -15,7 +14,7 @@ const (
 )
 
 // RunAlgorithm runs the algorithm
-func RunAlgorithm(courses []*Course, students []*Student, maxStudents int, fitness float32) *Schedule {
+func RunAlgorithm(courses []*Course, students []*Student, maxStudents, maxGenerations int) *Schedule {
 	Courses = courses
 	Students = students
 	MaxStudents = maxStudents
@@ -23,15 +22,25 @@ func RunAlgorithm(courses []*Course, students []*Student, maxStudents int, fitne
 	// Set the seeder for our random number generator
 	rand.Seed(time.Now().UTC().UnixNano())
 
+	var lastFitness float32
 	genNumber := 0
+	gensNotChanged := 0
 
 	population := newPopulation(populationSize)
 
-	for population.Schedules[0].Fitness <= fitness {
+	for gensNotChanged < maxGenerations {
 		genNumber++
-		fmt.Println(population.Schedules[0].Fitness)
+
 		sort.Sort(sort.Reverse(ByFitness(population.Schedules)))
 		population = evolve(population)
+
+		if population.Schedules[0].Fitness == lastFitness {
+			gensNotChanged++
+		} else {
+			gensNotChanged = 0
+		}
+
+		lastFitness = population.Schedules[0].Fitness
 	}
 
 	return population.Schedules[0]

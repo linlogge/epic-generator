@@ -33,7 +33,7 @@ func (s *Schedule) CalculateFitness() float32 {
 	for _, studentOne := range s.Classes[0].Students {
 		for _, studentTwo := range s.Classes[1].Students {
 			if studentOne.ID == studentTwo.ID {
-				s.Conflicts += 10
+				s.Conflicts += len(Courses)
 			}
 		}
 	}
@@ -42,10 +42,10 @@ func (s *Schedule) CalculateFitness() float32 {
 		classOneStudents := course.NumberOfMembers(s.Classes[0].Students)
 		classTwoStudents := course.NumberOfMembers(s.Classes[1].Students)
 
-		if classOneStudents > classTwoStudents {
-			s.Conflicts += s.Conflicts + ((classOneStudents - classTwoStudents) / 2)
+		if classOneStudents < classTwoStudents {
+			s.Conflicts += (classTwoStudents - classOneStudents)
 		} else if classTwoStudents != classOneStudents {
-			s.Conflicts += ((classTwoStudents - classOneStudents) / 2)
+			s.Conflicts += (classOneStudents - classTwoStudents)
 		}
 	}
 
