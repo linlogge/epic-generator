@@ -11,13 +11,14 @@ const (
 	populationSize         = 9
 	turnamentSelectionSize = 3
 	numbOfEliteSchedules   = 1
-	mutationRate           = 0.1
+	mutationRate           = 0.2
 )
 
 // RunAlgorithm runs the algorithm
-func RunAlgorithm(courses []*Course, students []*Student) *Schedule {
+func RunAlgorithm(courses []*Course, students []*Student, maxStudents int, fitness float32) *Schedule {
 	Courses = courses
 	Students = students
+	MaxStudents = maxStudents
 
 	// Set the seeder for our random number generator
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -26,22 +27,13 @@ func RunAlgorithm(courses []*Course, students []*Student) *Schedule {
 
 	population := newPopulation(populationSize)
 
-	for population.Schedules[0].Fitness <= 0.5 {
+	for population.Schedules[0].Fitness <= fitness {
 		genNumber++
+		fmt.Println(population.Schedules[0].Fitness)
 		sort.Sort(sort.Reverse(ByFitness(population.Schedules)))
 		population = evolve(population)
-		fmt.Println("Fitness:", population.Schedules[0].Fitness)
 	}
 
-	sort.Sort(ByName(population.Schedules[0].Classes))
-
-	for _, class := range population.Schedules[0].Classes {
-		fmt.Printf("Week: %v, Students: %v\n", class.Week, len(class.Students))
-		for _, student := range class.Students {
-			fmt.Println("ID:", student.ID, "Kurse:", len(student.Courses))
-		}
-		fmt.Println()
-	}
 	return population.Schedules[0]
 }
 

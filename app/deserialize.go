@@ -24,7 +24,7 @@ func Deserialize(workbook *excel.File) ([]*Course, []*Student, error) {
 	var students []*Student
 
 	// Extract all courses from tables
-	for index, table := range workbook.GetSheetList() {
+	for i, table := range workbook.GetSheetList() {
 		rows, err := workbook.GetRows(table)
 		if err != nil {
 			return nil, nil, err
@@ -32,9 +32,13 @@ func Deserialize(workbook *excel.File) ([]*Course, []*Student, error) {
 
 		var students []*Student
 
-		for i, row := range rows {
+		if len(rows) <= 1 {
+			continue
+		}
 
-			if i == 0 {
+		for j, row := range rows {
+
+			if j == 0 {
 				continue
 			}
 
@@ -45,7 +49,7 @@ func Deserialize(workbook *excel.File) ([]*Course, []*Student, error) {
 			students = append(students, &Student{ID: row[1]})
 		}
 
-		course := &Course{Name: table, Students: students, ID: index}
+		course := &Course{Name: table, Students: students, ID: i}
 		courses = append(courses, course)
 	}
 

@@ -15,34 +15,6 @@ var (
 	MaxStudents int
 )
 
-// Course represents a course
-type Course struct {
-	ID       int
-	Name     string
-	Students []*Student
-}
-
-// CountStudents counts the number of
-// students in a course
-func (c *Course) CountStudents() int {
-	return len(c.Students)
-}
-
-// getAllStudents gets all students of all courses
-func getAllStudents(courses []*Course) []*Student {
-	var students []*Student
-
-	for _, course := range courses {
-		for _, cStudent := range course.Students {
-			if !studentsContainStudent(students, cStudent) {
-				students = append(students, cStudent)
-			}
-		}
-	}
-
-	return students
-}
-
 func studentsContainStudent(students []*Student, student *Student) bool {
 	for _, s := range students {
 		if s.ID == student.ID {

@@ -15,11 +15,18 @@ var (
 	ErrInputPathEmpty = errors.New("Input file path cannot be empty")
 	// ErrInvalidFileFormat throws if the input file could not be read by excelize
 	ErrInvalidFileFormat = errors.New("The provided file is not a valid Excel file")
+	// ErrMaxStudentsTooSmall throws if the max amount of students is too small to compute
+	ErrMaxStudentsTooSmall = errors.New("The provided maximum number of students must be at least 5")
 )
 
-// MaxStudentsInCourseDefault is the default max number of
-// students that can be in a class simultaneously
-const MaxStudentsInCourseDefault = 15
+const (
+	// DefaultFitness is the default fitness the
+	// algorithm uses to determine when to stop
+	DefaultFitness = 0.2
+	// DefaultMaxStudents is the default number of
+	// students that can be in a class simultaneously
+	DefaultMaxStudents = 15
+)
 
 func main() {
 	app := &cli.App{
@@ -38,7 +45,12 @@ func main() {
 			&cli.IntFlag{
 				Name:  "max",
 				Usage: "the max number of students in a class",
-				Value: MaxStudentsInCourseDefault,
+				Value: DefaultMaxStudents,
+			},
+			&cli.Float64Flag{
+				Name:  "fitness",
+				Usage: "the fitness the algorithm should stop",
+				Value: DefaultFitness,
 			},
 		},
 	}
@@ -59,10 +71,13 @@ func Run(cmd *cli.Context) error {
 		return ErrInputPathEmpty
 	}
 
+	// Check if user provided a max fitness
+	fitness := cmd.Float64("fitness")
+
 	// Check if user provided a max amount of students
 	maxStudents := cmd.Int("max")
-	if maxStudents == 0 {
-		maxStudents = MaxStudentsInCourseDefault
+	if maxStudents < 5 {
+		return ErrMaxStudentsTooSmall
 	}
 
 	// Open file with provided input file path
@@ -76,14 +91,15 @@ func Run(cmd *cli.Context) error {
 		return err
 	}
 
-	schedule := app.RunAlgorithm(courses, students)
-	app.WriteScheduleAsTable(schedule)
+	schedule := app.RunAlgorithm(courses, students, maxStudents, float32(fitness))
 
-	/* outputPath := cmd.String("output")
+	outputPath := cmd.String("output")
 	if outputPath == "" {
-		app.WriteCoursesAsTable(courses)
+		app.WriteScheduleToStdOut(schedule)
 		return nil
-	} */
+	}
+
+	app.WriteScheduleAsFile(schedule, outputPath)
 
 	return nil
 }
