@@ -3,7 +3,7 @@ package app
 // Schedule represents the finished
 // distributable timetable
 type Schedule struct {
-	Classes        []*Class
+	Weeks          []*Week
 	Conflicts      int
 	Fitness        float32
 	FitnessChanged bool
@@ -30,17 +30,17 @@ func (b ByFitness) Swap(i, j int) {
 func (s *Schedule) CalculateFitness() float32 {
 	s.Conflicts = 0
 
-	for _, studentOne := range s.Classes[0].Students {
-		for _, studentTwo := range s.Classes[1].Students {
-			if studentOne.ID == studentTwo.ID {
+	for _, studentInWeekOne := range s.Weeks[0].Students {
+		for _, studentInWeekTwo := range s.Weeks[1].Students {
+			if studentInWeekOne.ID == studentInWeekTwo.ID {
 				s.Conflicts += len(Courses)
 			}
 		}
 	}
 
 	for _, course := range Courses {
-		weekOneStudents := course.CountMembersBy(s.Classes[0].Students)
-		weekTwoStudents := course.CountMembersBy(s.Classes[1].Students)
+		weekOneStudents := course.CountMembersBy(s.Weeks[0].Students)
+		weekTwoStudents := course.CountMembersBy(s.Weeks[1].Students)
 
 		if weekOneStudents > MaxStudents || weekTwoStudents > MaxStudents {
 			s.Conflicts += len(Courses)
@@ -69,23 +69,23 @@ func (s *Schedule) GetFitness() float32 {
 
 func newSchedule() *Schedule {
 
-	var classes []*Class
+	var weeks []*Week
 
-	studentsOne, studentsTwo := splitStudents(Students)
+	studentsInWeekOne, studentsInWeekTwo := splitStudents(Students)
 
-	classOne := &Class{
+	weekOne := &Week{
 		Week:     0,
-		Students: studentsOne,
+		Students: studentsInWeekOne,
 	}
-	classTwo := &Class{
+	weekTwo := &Week{
 		Week:     1,
-		Students: studentsTwo,
+		Students: studentsInWeekTwo,
 	}
 
-	classes = append(classes, classOne, classTwo)
+	weeks = append(weeks, weekOne, weekTwo)
 
 	return &Schedule{
-		Classes:        classes,
+		Weeks:          weeks,
 		Fitness:        -1,
 		FitnessChanged: true,
 	}

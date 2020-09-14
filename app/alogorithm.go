@@ -77,9 +77,9 @@ func mutatePopulation(pop *Population) *Population {
 func mutateSchedule(mutSchedule *Schedule) *Schedule {
 	schedule := newSchedule()
 
-	for i := 0; i < len(mutSchedule.Classes); i++ {
+	for i := 0; i < len(mutSchedule.Weeks); i++ {
 		if mutationRate > rand.Float32() {
-			mutSchedule.Classes[i] = schedule.Classes[i]
+			mutSchedule.Weeks[i] = schedule.Weeks[i]
 		}
 	}
 
@@ -89,11 +89,11 @@ func mutateSchedule(mutSchedule *Schedule) *Schedule {
 func crossoverSchedule(first *Schedule, second *Schedule) *Schedule {
 	crossoverSchedule := newSchedule()
 
-	for i := 0; i < len(crossoverSchedule.Classes); i++ {
+	for i := 0; i < len(crossoverSchedule.Weeks); i++ {
 		if rand.Intn(2) == 1 {
-			crossoverSchedule.Classes[i] = first.Classes[i]
+			crossoverSchedule.Weeks[i] = first.Weeks[i]
 		} else {
-			crossoverSchedule.Classes[i] = second.Classes[i]
+			crossoverSchedule.Weeks[i] = second.Weeks[i]
 		}
 	}
 	return crossoverSchedule

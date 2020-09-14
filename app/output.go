@@ -34,8 +34,8 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 	f.SetCellValue("Wochenübersicht", "A1", "Woche 1")
 	f.SetCellValue("Wochenübersicht", "B1", "Woche 2")
 
-	var o = schedule.Classes[0].Students
-	var t = schedule.Classes[1].Students
+	var o = schedule.Weeks[0].Students
+	var t = schedule.Weeks[1].Students
 
 	for i := 0; i < biggest(len(o), len(t)); i++ {
 		var one string
@@ -53,7 +53,7 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 		f.SetCellValue("Wochenübersicht", "B"+fmt.Sprint(i+2), two)
 	}
 
-	courses := ClassesToCourses(schedule.Classes)
+	courses := WeeksToCourses(schedule.Weeks)
 
 	for i, course := range courses {
 		f.SetCellValue("Kursübersicht", "A"+fmt.Sprint(i+2), course.Name)
@@ -70,11 +70,11 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 // WriteScheduleToStdOut writes the result as table to stdout
 func WriteScheduleToStdOut(schedule *Schedule) {
 
-	classTable := tablewriter.NewWriter(os.Stdout)
-	classTable.SetHeader([]string{"Woche 1", "Woche 2"})
+	weeksTable := tablewriter.NewWriter(os.Stdout)
+	weeksTable.SetHeader([]string{"Woche 1", "Woche 2"})
 
-	var o = schedule.Classes[0].Students
-	var t = schedule.Classes[1].Students
+	var o = schedule.Weeks[0].Students
+	var t = schedule.Weeks[1].Students
 
 	for i := 0; i < biggest(len(o), len(t)); i++ {
 		var one string
@@ -88,13 +88,13 @@ func WriteScheduleToStdOut(schedule *Schedule) {
 			two = t[i].ID
 		}
 
-		classTable.Append([]string{one, two})
+		weeksTable.Append([]string{one, two})
 	}
 
-	courseTable := tablewriter.NewWriter(os.Stdout)
-	courseTable.SetHeader([]string{"Kursname", "#SuS"})
+	coursesTable := tablewriter.NewWriter(os.Stdout)
+	coursesTable.SetHeader([]string{"Kursname", "#SuS"})
 
-	courses := ClassesToCourses(schedule.Classes)
+	courses := WeeksToCourses(schedule.Weeks)
 
 	for _, course := range courses {
 		var studentIDs []string
@@ -105,9 +105,9 @@ func WriteScheduleToStdOut(schedule *Schedule) {
 		for _, id := range studentIDs {
 			row = append(row, id)
 		}
-		courseTable.Append(row)
+		coursesTable.Append(row)
 	}
 
-	classTable.Render()
-	courseTable.Render()
+	weeksTable.Render()
+	coursesTable.Render()
 }
