@@ -13,6 +13,7 @@ func toChar(i int) string {
 	return string(rune('A' - 1 + i))
 }
 
+// biggest returns the largest of two integers
 func biggest(i, j int) int {
 	if i > j {
 		return i
@@ -29,7 +30,7 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 	f.DeleteSheet("Sheet1")
 
 	f.SetCellValue("Kursübersicht", "A1", "Kursname")
-	f.SetCellValue("Kursübersicht", "B1", "#SuS")
+	f.SetCellValue("Kursübersicht", "B1", "Kursgröße")
 
 	f.SetCellValue("Wochenübersicht", "A1", "Woche 1")
 	f.SetCellValue("Wochenübersicht", "B1", "Woche 2")
@@ -49,18 +50,18 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 			two = t[i].ID
 		}
 
-		f.SetCellValue("Wochenübersicht", "A"+fmt.Sprint(i+2), one)
-		f.SetCellValue("Wochenübersicht", "B"+fmt.Sprint(i+2), two)
+		f.SetCellValue("Wochenübersicht", fmt.Sprint("A", i+2), one)
+		f.SetCellValue("Wochenübersicht", fmt.Sprint("B", i+2), two)
 	}
 
 	courses := WeeksToCourses(schedule.Weeks)
 
 	for i, course := range courses {
-		f.SetCellValue("Kursübersicht", "A"+fmt.Sprint(i+2), course.Name)
-		f.SetCellValue("Kursübersicht", "B"+fmt.Sprint(i+2), course.CountStudents())
+		f.SetCellValue("Kursübersicht", fmt.Sprint("A", i+2), course.Name)
+		f.SetCellValue("Kursübersicht", fmt.Sprint("B", i+2), course.CountStudents())
 
 		for j, student := range course.Students {
-			f.SetCellValue("Kursübersicht", toChar(j+3)+fmt.Sprint(i+2), student.ID)
+			f.SetCellValue("Kursübersicht", fmt.Sprint(toChar(j+3), i+2), student.ID)
 		}
 	}
 
@@ -92,7 +93,7 @@ func WriteScheduleToStdOut(schedule *Schedule) {
 	}
 
 	coursesTable := tablewriter.NewWriter(os.Stdout)
-	coursesTable.SetHeader([]string{"Kursname", "#SuS"})
+	coursesTable.SetHeader([]string{"Kursname", "Kursgröße"})
 
 	courses := WeeksToCourses(schedule.Weeks)
 
@@ -101,10 +102,12 @@ func WriteScheduleToStdOut(schedule *Schedule) {
 		for _, student := range course.Students {
 			studentIDs = append(studentIDs, student.ID)
 		}
+
 		row := []string{course.Name, strconv.Itoa(course.CountStudents())}
 		for _, id := range studentIDs {
 			row = append(row, id)
 		}
+
 		coursesTable.Append(row)
 	}
 
