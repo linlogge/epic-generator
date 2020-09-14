@@ -104,11 +104,18 @@ func Run(cmd *cli.Context) error {
 
 	maxGenerations := cmd.Int("generations")
 
-	schedule := app.RunAlgorithm(courses, students, maxStudents, maxGenerations)
+	schedule, generations, duration := app.RunAlgorithm(&app.Algorithm{
+		Courses:        courses,
+		Students:       students,
+		MaxStudents:    maxStudents,
+		MaxGenerations: maxGenerations,
+	})
 
 	fmt.Println()
 	fmt.Println("Fitness:", schedule.Fitness)
 	fmt.Println("Conflicts:", schedule.Conflicts)
+	fmt.Println("Generations:", generations)
+	fmt.Println("Duration:", duration)
 	fmt.Println()
 
 	outputPath := cmd.String("output")

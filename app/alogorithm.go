@@ -10,25 +10,36 @@ const (
 	populationSize         = 9
 	turnamentSelectionSize = 3
 	numbOfEliteSchedules   = 1
-	mutationRate           = 0.2
+	mutationRate           = 0.5
 )
 
+// Algorithm is a collection of
+// data that's necessary for
+// the algorithm to run
+type Algorithm struct {
+	Courses        []*Course
+	Students       []*Student
+	MaxStudents    int
+	MaxGenerations int
+}
+
 // RunAlgorithm runs the algorithm
-func RunAlgorithm(courses []*Course, students []*Student, maxStudents, maxGenerations int) *Schedule {
-	Courses = courses
-	Students = students
-	MaxStudents = maxStudents
+func RunAlgorithm(algorithm *Algorithm) (*Schedule, int, time.Duration) {
+	Courses = algorithm.Courses
+	Students = algorithm.Students
+	MaxStudents = algorithm.MaxStudents
 
 	// Set the seeder for our random number generator
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	lastFitness := float32(0)
-	genNumber := 0
-	gensNotChanged := 0
+	var startTime = time.Now()
+	var lastFitness float32
+	var genNumber int
+	var gensNotChanged int
 
 	population := newPopulation(populationSize)
 
-	for gensNotChanged < maxGenerations {
+	for gensNotChanged < algorithm.MaxGenerations {
 		genNumber++
 
 		sort.Sort(sort.Reverse(ScheduleByFitness(population.Schedules)))
@@ -43,7 +54,7 @@ func RunAlgorithm(courses []*Course, students []*Student, maxStudents, maxGenera
 		lastFitness = population.Schedules[0].Fitness
 	}
 
-	return population.Schedules[0]
+	return population.Schedules[0], genNumber, time.Since(startTime)
 }
 
 // Evolve evloves the population to a next gen
