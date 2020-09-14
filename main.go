@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	app "gibhub.com/davincigs/courses/app"
 	excel "github.com/360EntSecGroup-Skylar/excelize/v2"
+	app "github.com/noelsigmunczyk/epic-generator/app"
 	cli "github.com/urfave/cli/v2"
 )
 
