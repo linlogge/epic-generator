@@ -1,21 +1,8 @@
 package app
 
 import (
-	"fmt"
-
 	excel "github.com/360EntSecGroup-Skylar/excelize/v2"
 )
-
-// ErrWrongNumberOfColumns throws if a table
-// has a wrong amount of columns
-type ErrWrongNumberOfColumns struct {
-	table    string
-	colCount int
-}
-
-func (e ErrWrongNumberOfColumns) Error() string {
-	return fmt.Sprintf("The number of columns in table %v is %v but must be 2", e.table, e.colCount)
-}
 
 // Deserialize deserializes an excel file
 // containing tables of courses into models
@@ -42,11 +29,9 @@ func Deserialize(workbook *excel.File) ([]*Course, []*Student, error) {
 				continue
 			}
 
-			colCount := len(row)
-			if colCount != 2 {
-				return nil, nil, ErrWrongNumberOfColumns{table, colCount}
+			if len(row) == 2 {
+				students = append(students, &Student{ID: row[1]})
 			}
-			students = append(students, &Student{ID: row[1]})
 		}
 
 		course := &Course{Name: table, Students: students, ID: i}
