@@ -22,7 +22,7 @@ func RunAlgorithm(courses []*Course, students []*Student, maxStudents, maxGenera
 	// Set the seeder for our random number generator
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	var lastFitness float32
+	lastFitness := float32(0)
 	genNumber := 0
 	gensNotChanged := 0
 
