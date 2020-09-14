@@ -3,13 +3,13 @@ package app
 import "math/rand"
 
 var (
-	// Courses are the courses to
-	// run the algorithm on
+	// Courses are the courses
+	// extracted from input source
 	Courses []*Course
 	// Students are all students
 	// extracted from courses
 	Students []*Student
-	// MaxStudents is the amount
+	// MaxStudents is the maximum amount
 	// of students that can be in a
 	// class simultaneously
 	MaxStudents int
