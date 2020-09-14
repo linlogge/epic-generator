@@ -35,19 +35,19 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 	f.SetCellValue("Wochenübersicht", "A1", "Woche 1")
 	f.SetCellValue("Wochenübersicht", "B1", "Woche 2")
 
-	var o = schedule.Weeks[0].Students
-	var t = schedule.Weeks[1].Students
+	weekOneStudents := schedule.Weeks[0].Students
+	weekTwoStudents := schedule.Weeks[1].Students
 
-	for i := 0; i < biggest(len(o), len(t)); i++ {
+	for i := 0; i < biggest(len(weekOneStudents), len(weekTwoStudents)); i++ {
 		var one string
 		var two string
 
-		if len(o) > i {
-			one = o[i].ID
+		if len(weekOneStudents) > i {
+			one = weekOneStudents[i].ID
 		}
 
-		if len(t) > i {
-			two = t[i].ID
+		if len(weekTwoStudents) > i {
+			two = weekTwoStudents[i].ID
 		}
 
 		f.SetCellValue("Wochenübersicht", fmt.Sprint("A", i+2), one)
@@ -70,23 +70,22 @@ func WriteScheduleAsFile(schedule *Schedule, outputPath string) error {
 
 // WriteScheduleToStdOut writes the result as table to stdout
 func WriteScheduleToStdOut(schedule *Schedule) {
-
 	weeksTable := tablewriter.NewWriter(os.Stdout)
 	weeksTable.SetHeader([]string{"Woche 1", "Woche 2"})
 
-	var o = schedule.Weeks[0].Students
-	var t = schedule.Weeks[1].Students
+	weekOneStudents := schedule.Weeks[0].Students
+	weekTwoStudents := schedule.Weeks[1].Students
 
-	for i := 0; i < biggest(len(o), len(t)); i++ {
+	for i := 0; i < biggest(len(weekOneStudents), len(weekTwoStudents)); i++ {
 		var one string
 		var two string
 
-		if len(o) > i {
-			one = o[i].ID
+		if len(weekOneStudents) > i {
+			one = weekOneStudents[i].ID
 		}
 
-		if len(t) > i {
-			two = t[i].ID
+		if len(weekTwoStudents) > i {
+			two = weekTwoStudents[i].ID
 		}
 
 		weeksTable.Append([]string{one, two})
