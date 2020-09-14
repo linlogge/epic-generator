@@ -23,8 +23,6 @@ const (
 var (
 	// ErrInputPathEmpty throws if input file path is not specified
 	ErrInputPathEmpty = errors.New("Input file path must be set with --input")
-	// ErrInvalidFileFormat throws if the input file could not be read by excelize
-	ErrInvalidFileFormat = errors.New("The provided file is not a valid Excel file")
 	// ErrMaxStudentsTooSmall throws if the max amount of students is too small to compute
 	ErrMaxStudentsTooSmall = errors.New("The provided maximum number of students must be at least 5")
 )
@@ -89,7 +87,7 @@ func Run(cmd *cli.Context) error {
 
 	workbook, err := excel.OpenFile(inputPath)
 	if err != nil {
-		return ErrInvalidFileFormat
+		return err
 	}
 
 	courses, students, err := app.Deserialize(workbook)
