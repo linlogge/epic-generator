@@ -40,8 +40,8 @@ func (e ErrCourseTooLarge) Error() string {
 
 func main() {
 	app := &cli.App{
-		Name:   "covidc",
-		Usage:  "an algorithm to schedule courses",
+		Name:   "epic-generator",
+		Usage:  "a generator to generate a schedule for seperate learning",
 		Action: Run,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
