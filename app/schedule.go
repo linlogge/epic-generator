@@ -39,13 +39,17 @@ func (s *Schedule) CalculateFitness() float32 {
 	}
 
 	for _, course := range Courses {
-		classOneStudents := course.NumberOfMembers(s.Classes[0].Students)
-		classTwoStudents := course.NumberOfMembers(s.Classes[1].Students)
+		weekOneStudents := course.CountMembersBy(s.Classes[0].Students)
+		weekTwoStudents := course.CountMembersBy(s.Classes[1].Students)
 
-		if classOneStudents < classTwoStudents {
-			s.Conflicts += (classTwoStudents - classOneStudents)
-		} else if classTwoStudents != classOneStudents {
-			s.Conflicts += (classOneStudents - classTwoStudents)
+		if weekOneStudents > MaxStudents || weekTwoStudents > MaxStudents {
+			s.Conflicts += len(Courses)
+		}
+
+		if weekOneStudents < weekTwoStudents {
+			s.Conflicts += (weekTwoStudents - weekOneStudents)
+		} else if weekTwoStudents != weekOneStudents {
+			s.Conflicts += (weekOneStudents - weekTwoStudents)
 		}
 	}
 

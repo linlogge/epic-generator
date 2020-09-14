@@ -35,9 +35,9 @@ func combineCourses(c [][]*Course) []*Course {
 	return courses
 }
 
-// NumberOfMembers takes a list of students and returns the number
-// of members in a course by the given students
-func (c *Course) NumberOfMembers(students []*Student) (counter int) {
+// CountMembersBy takes a list of students and returns the number
+// of students that are a member of the course
+func (c *Course) CountMembersBy(students []*Student) (counter int) {
 
 	for _, courseStudent := range c.Students {
 		for _, student := range students {
