@@ -1,3 +1,4 @@
 courses
 courses.exe
-*.xlsx*
+*.xlsx#
+/*.xlsx
