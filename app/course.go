@@ -61,9 +61,9 @@ func getAllStudents(courses []*Course) []*Student {
 	var students []*Student
 
 	for _, course := range courses {
-		for _, cStudent := range course.Students {
-			if !studentsContainStudent(students, cStudent) {
-				students = append(students, cStudent)
+		for _, courseStudent := range course.Students {
+			if !studentsContainStudent(students, courseStudent) {
+				students = append(students, courseStudent)
 			}
 		}
 	}
