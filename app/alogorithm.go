@@ -31,7 +31,7 @@ func RunAlgorithm(courses []*Course, students []*Student, maxStudents, maxGenera
 	for gensNotChanged < maxGenerations {
 		genNumber++
 
-		sort.Sort(sort.Reverse(ByFitness(population.Schedules)))
+		sort.Sort(sort.Reverse(ScheduleByFitness(population.Schedules)))
 		population = evolve(population)
 
 		if population.Schedules[0].Fitness == lastFitness {
@@ -107,7 +107,7 @@ func selectTurnamentPopulation(pop *Population) *Population {
 		turnamentPop.Schedules = append(turnamentPop.Schedules, schedule)
 	}
 
-	sort.Sort(sort.Reverse(ByFitness(turnamentPop.Schedules)))
+	sort.Sort(sort.Reverse(ScheduleByFitness(turnamentPop.Schedules)))
 
 	return turnamentPop
 }

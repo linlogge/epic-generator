@@ -9,19 +9,19 @@ type Schedule struct {
 	FitnessChanged bool
 }
 
-// ByFitness is a helper type
+// ScheduleByFitness is a helper type
 // to sort schedules by fitness
-type ByFitness []*Schedule
+type ScheduleByFitness []*Schedule
 
-func (b ByFitness) Len() int {
+func (b ScheduleByFitness) Len() int {
 	return len(b)
 }
 
-func (b ByFitness) Less(i, j int) bool {
+func (b ScheduleByFitness) Less(i, j int) bool {
 	return b[i].GetFitness() < b[j].GetFitness()
 }
 
-func (b ByFitness) Swap(i, j int) {
+func (b ScheduleByFitness) Swap(i, j int) {
 	b[i], b[j] = b[j], b[i]
 }
 
