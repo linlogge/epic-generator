@@ -17,7 +17,7 @@ const (
 	// DefaultMaxGenerations is the default maximum number
 	// of generations that are the same before the algorithm
 	// stops to evolve
-	DefaultMaxGenerations = 2500
+	DefaultMaxGenerations = 4000
 )
 
 var (
